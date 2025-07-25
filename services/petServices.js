@@ -85,18 +85,23 @@ export async function jugarPet(id, user) {
 export async function alimentarPet(id, user) {
   const pet = await Pet.findById(id);
   if (pet.isDead) throw new Error('No se puede realizar esta acción, la mascota ha muerto.');
+  let advertencia = null;
   // Penalización por sobrealimentación
   if (pet.felicidad >= 100 || pet.hambre === 0) {
     pet.salud -= 10;
-    await saveAndCheckDeath(pet);
-    throw new Error('¡Cuidado! Sobrealimentación: la salud de la mascota ha bajado.');
+    advertencia = '¡Cuidado! Sobrealimentación: la salud de la mascota ha bajado.';
+  } else {
+    if (pet.limpieza < 20) pet.salud -= 10;
+    pet.hambre -= 30;
+    if (pet.hambre < 0) pet.hambre = 0;
+    pet.felicidad += pet.personalidad === 'triste' ? 5 : 10;
+    if (pet.felicidad > 100) pet.felicidad = 100;
   }
-  if (pet.limpieza < 20) pet.salud -= 10;
-  pet.hambre -= 30;
-  if (pet.hambre < 0) pet.hambre = 0;
-  pet.felicidad += pet.personalidad === 'triste' ? 5 : 10;
-  if (pet.felicidad > 100) pet.felicidad = 100;
-  return await saveAndCheckDeath(pet);
+  await saveAndCheckDeath(pet);
+  if (advertencia) {
+    return { pet, advertencia };
+  }
+  return pet;
 }
 
 export async function banarPet(id, user) {
