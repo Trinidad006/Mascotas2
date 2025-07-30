@@ -396,28 +396,24 @@ if (process.env.NODE_ENV !== 'production') {
   const frontendPath = path.join(__dirname, 'frontend', 'dist');
   console.log('Frontend path:', frontendPath);
   
-  // Verificar si existe el directorio
-  try {
-    const fs = await import('fs');
-    if (fs.existsSync(frontendPath)) {
-      console.log('Frontend dist directory exists');
-      app.use(express.static(frontendPath));
-      
-      app.get('*', (req, res) => {
-        res.sendFile(path.join(frontendPath, 'index.html'));
-      });
-    } else {
-      console.log('Frontend dist directory does not exist, serving API only');
-      app.get('/', (req, res) => {
-        res.json({ message: 'API de Mascotas Virtuales', docs: '/api-docs' });
-      });
+  // Servir archivos estáticos si existen
+  app.use(express.static(frontendPath));
+  
+  // Para todas las rutas que no sean API, servir index.html
+  app.get('*', (req, res, next) => {
+    // Si es una ruta de API, continuar
+    if (req.path.startsWith('/api') || req.path.startsWith('/login') || req.path.startsWith('/users') || req.path.startsWith('/pets') || req.path.startsWith('/api-docs')) {
+      return next();
     }
-  } catch (error) {
-    console.log('Error checking frontend path:', error.message);
-    app.get('/', (req, res) => {
-      res.json({ message: 'API de Mascotas Virtuales', docs: '/api-docs' });
+    
+    // Si no es API, servir el frontend
+    res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
+      if (err) {
+        console.log('Error serving frontend:', err.message);
+        res.json({ message: 'API de Mascotas Virtuales', docs: '/api-docs' });
+      }
     });
-  }
+  });
 }
 
 const PORT = process.env.PORT || 3000;
