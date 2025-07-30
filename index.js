@@ -5,12 +5,26 @@ import * as userCtrl from './controllers/userControllers.js';
 import * as petCtrl from './controllers/petControllers.js';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Conectar a la base de datos
 connectDB();
 
 const app = express();
 app.use(express.json());
+
+// CORS global
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 // Swagger config
 const swaggerOptions = {
@@ -368,9 +382,23 @@ app.post('/pets/:id/curar', authenticateJWT, petCtrl.curar);
  */
 app.get('/pets/:id/vida', authenticateJWT, petCtrl.vida);
 
-app.get('/', (req, res) => {
-  res.send('API Mascotas y Usuarios funcionando');
-});
+// Servir archivos estáticos del frontend
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// En desarrollo, redirigir al frontend
+if (process.env.NODE_ENV !== 'production') {
+  app.get('/', (req, res) => {
+    res.redirect('http://localhost:5173');
+  });
+} else {
+  // En producción, servir archivos estáticos
+  app.use(express.static(path.join(__dirname, 'frontend/dist')));
+  
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
