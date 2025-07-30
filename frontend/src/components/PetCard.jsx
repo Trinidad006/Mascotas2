@@ -47,13 +47,35 @@ const PetCard = ({ pet, onUpdate }) => {
       setMessage(`¡Acción ${action} realizada con éxito!`);
       setTimeout(() => setMessage(''), 3000);
 
-      // Recargar mascota desde servidor
+      // Recargar mascota desde servidor inmediatamente
       try {
+        console.log('Recargando mascota desde servidor...');
         const updatedPet = await petService.getVida(pet._id);
-        onUpdate(updatedPet);
+        console.log('Mascota actualizada desde servidor:', updatedPet);
+        
+        // Validar y actualizar la mascota
+        const validatedPet = {
+          _id: updatedPet._id,
+          name: updatedPet.name || pet.name,
+          type: updatedPet.type || pet.type,
+          superPower: updatedPet.superPower || pet.superPower,
+          personalidad: updatedPet.personalidad || pet.personalidad,
+          salud: updatedPet.salud !== undefined ? updatedPet.salud : pet.salud,
+          felicidad: updatedPet.felicidad !== undefined ? updatedPet.felicidad : pet.felicidad,
+          sueno: updatedPet.sueno !== undefined ? updatedPet.sueno : pet.sueno,
+          hambre: updatedPet.hambre !== undefined ? updatedPet.hambre : pet.hambre,
+          limpieza: updatedPet.limpieza !== undefined ? updatedPet.limpieza : pet.limpieza,
+          isDead: updatedPet.isDead !== undefined ? updatedPet.isDead : pet.isDead,
+          ownerId: updatedPet.ownerId || pet.ownerId
+        };
+        
+        console.log('Mascota validada para actualizar:', validatedPet);
+        onUpdate(validatedPet);
       } catch (reloadError) {
         console.error('Error recargando mascota:', reloadError);
+        // Si no se puede recargar, usar el resultado de la acción
         if (result && result._id) {
+          console.log('Usando resultado de la acción como fallback:', result);
           onUpdate(result);
         }
       }
