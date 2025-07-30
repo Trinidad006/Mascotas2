@@ -134,12 +134,7 @@ export async function curarPet(id, user) {
 
 export async function getPetVida(id, user) {
   const pet = await Pet.findById(id);
-  return {
-    estado: pet.isDead ? 'muerta' : 'viva',
-    felicidad: pet.felicidad,
-    sueno: pet.sueno,
-    hambre: pet.hambre,
-    limpieza: pet.limpieza,
-    salud: pet.salud
-  };
+  if (!pet) throw new Error('Mascota no encontrada');
+  if (user.role !== 'admin' && pet.ownerId !== user.id) throw new Error('No autorizado');
+  return pet.toObject();
 } 
