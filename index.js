@@ -393,11 +393,31 @@ if (process.env.NODE_ENV !== 'production') {
   });
 } else {
   // En producción, servir archivos estáticos
-  app.use(express.static(path.join(__dirname, 'frontend/dist')));
+  const frontendPath = path.join(__dirname, 'frontend', 'dist');
+  console.log('Frontend path:', frontendPath);
   
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'frontend/dist/index.html'));
-  });
+  // Verificar si existe el directorio
+  try {
+    const fs = await import('fs');
+    if (fs.existsSync(frontendPath)) {
+      console.log('Frontend dist directory exists');
+      app.use(express.static(frontendPath));
+      
+      app.get('*', (req, res) => {
+        res.sendFile(path.join(frontendPath, 'index.html'));
+      });
+    } else {
+      console.log('Frontend dist directory does not exist, serving API only');
+      app.get('/', (req, res) => {
+        res.json({ message: 'API de Mascotas Virtuales', docs: '/api-docs' });
+      });
+    }
+  } catch (error) {
+    console.log('Error checking frontend path:', error.message);
+    app.get('/', (req, res) => {
+      res.json({ message: 'API de Mascotas Virtuales', docs: '/api-docs' });
+    });
+  }
 }
 
 const PORT = process.env.PORT || 3000;
