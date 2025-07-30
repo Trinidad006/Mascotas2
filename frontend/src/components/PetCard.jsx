@@ -46,9 +46,15 @@ const PetCard = ({ pet, onUpdate }) => {
       console.log('Resultado de la acción:', result);
       setMessage(`¡Acción ${action} realizada con éxito!`);
       
-      // Recargar página después de mostrar el mensaje
+      // Recargar todas las mascotas desde el servidor
       setTimeout(() => {
-        window.location.reload();
+        if (window.reloadPets) {
+          console.log('Llamando a reloadPets...');
+          window.reloadPets();
+        } else {
+          console.log('reloadPets no disponible, recargando página...');
+          window.location.reload();
+        }
       }, 1000);
 
     } catch (error) {
