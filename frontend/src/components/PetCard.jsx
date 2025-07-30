@@ -45,44 +45,21 @@ const PetCard = ({ pet, onUpdate }) => {
 
       console.log('Resultado de la acción:', result);
 
-      // Mostrar mensaje de éxito o advertencia
-      if (result.advertencia) {
-        setMessage(result.advertencia);
-        setTimeout(() => setMessage(''), 5000);
-      } else if (result.message) {
-        setMessage(result.message);
-        setTimeout(() => setMessage(''), 3000);
-      } else {
-        setMessage(`¡Acción ${action} realizada con éxito!`);
-        setTimeout(() => setMessage(''), 3000);
-      }
+      // Mostrar mensaje de éxito
+      setMessage(`¡Acción ${action} realizada con éxito!`);
+      setTimeout(() => setMessage(''), 3000);
 
-      // Actualizar la mascota en el componente padre
-      const updatedPet = result.pet || result;
-      console.log('Mascota actualizada:', updatedPet);
-      
-      if (updatedPet && updatedPet._id) {
-        // Validar la mascota actualizada
-        const validatedUpdatedPet = {
-          _id: updatedPet._id,
-          name: updatedPet.name || pet.name,
-          type: updatedPet.type || pet.type,
-          superPower: updatedPet.superPower || pet.superPower,
-          personalidad: updatedPet.personalidad || pet.personalidad,
-          salud: updatedPet.salud !== undefined ? updatedPet.salud : pet.salud,
-          felicidad: updatedPet.felicidad !== undefined ? updatedPet.felicidad : pet.felicidad,
-          sueno: updatedPet.sueno !== undefined ? updatedPet.sueno : pet.sueno,
-          hambre: updatedPet.hambre !== undefined ? updatedPet.hambre : pet.hambre,
-          limpieza: updatedPet.limpieza !== undefined ? updatedPet.limpieza : pet.limpieza,
-          isDead: updatedPet.isDead !== undefined ? updatedPet.isDead : pet.isDead,
-          ownerId: updatedPet.ownerId || pet.ownerId
-        };
-        
-        console.log('Mascota validada para actualizar:', validatedUpdatedPet);
-        onUpdate(validatedUpdatedPet);
-      } else {
-        console.error('Respuesta inválida del servidor:', result);
-        setMessage('Error: Respuesta inválida del servidor');
+      // Recargar la mascota desde el servidor
+      try {
+        const updatedPet = await petService.getVida(pet._id);
+        console.log('Mascota actualizada desde servidor:', updatedPet);
+        onUpdate(updatedPet);
+      } catch (reloadError) {
+        console.error('Error recargando mascota:', reloadError);
+        // Si no se puede recargar, usar el resultado de la acción
+        if (result && result._id) {
+          onUpdate(result);
+        }
       }
     } catch (error) {
       console.error('Error en acción:', error);
@@ -106,13 +83,6 @@ const PetCard = ({ pet, onUpdate }) => {
       case 'pez': return '🐠';
       default: return '🐾';
     }
-  };
-
-  const getStatusColor = (value, isReverse = false) => {
-    if (isReverse) {
-      return value <= 20 ? '#ff6b6b' : value <= 50 ? '#f39c12' : '#4ecdc4';
-    }
-    return value <= 20 ? '#ff6b6b' : value <= 50 ? '#f39c12' : '#4ecdc4';
   };
 
   // Validar que la mascota tenga todos los campos necesarios
@@ -146,32 +116,32 @@ const PetCard = ({ pet, onUpdate }) => {
       <span>{isDead ? 'Muerta' : 'Viva'}</span>
 
       {message && (
-        <div className={message.includes('¡Cuidado!') || message.includes('Error') ? 'error' : 'success'} style={{ marginTop: '15px' }}>
+        <div className={message.includes('Error') ? 'error' : 'success'} style={{ marginTop: '15px' }}>
           {message}
         </div>
       )}
 
-      {/* Barras de vida */}
+      {/* Barras de vida estáticas */}
       <div style={{ marginTop: '20px' }}>
         <div>
-          <strong>Salud:</strong> {pet.salud !== undefined ? pet.salud : 0}%
+          <strong>Salud:</strong> {pet.salud !== undefined ? pet.salud : 100}%
           <div className="progress-bar">
             <div 
               className="progress-fill health" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.salud || 0))}%`
+                width: `${Math.max(0, Math.min(100, pet.salud || 100))}%`
               }}
             ></div>
           </div>
         </div>
 
         <div>
-          <strong>Felicidad:</strong> {pet.felicidad !== undefined ? pet.felicidad : 0}%
+          <strong>Felicidad:</strong> {pet.felicidad !== undefined ? pet.felicidad : 100}%
           <div className="progress-bar">
             <div 
               className="progress-fill happiness" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.felicidad || 0))}%`
+                width: `${Math.max(0, Math.min(100, pet.felicidad || 100))}%`
               }}
             ></div>
           </div>
@@ -202,12 +172,12 @@ const PetCard = ({ pet, onUpdate }) => {
         </div>
 
         <div>
-          <strong>Limpieza:</strong> {pet.limpieza !== undefined ? pet.limpieza : 0}%
+          <strong>Limpieza:</strong> {pet.limpieza !== undefined ? pet.limpieza : 100}%
           <div className="progress-bar">
             <div 
               className="progress-fill cleanliness" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.limpieza || 0))}%`
+                width: `${Math.max(0, Math.min(100, pet.limpieza || 100))}%`
               }}
             ></div>
           </div>
@@ -219,7 +189,7 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('dormir')}
-          disabled={loading || isDead || (pet.sueno !== undefined && pet.sueno >= 100)}
+          disabled={loading || isDead}
         >
           😴 Dormir
         </button>
@@ -227,10 +197,7 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('jugar')}
-          disabled={loading || isDead || 
-            (pet.sueno !== undefined && pet.sueno < 10) || 
-            (pet.hambre !== undefined && pet.hambre > 80) || 
-            (pet.limpieza !== undefined && pet.limpieza < 20)}
+          disabled={loading || isDead}
         >
           🎾 Jugar
         </button>
@@ -262,7 +229,7 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('curar')}
-          disabled={loading || isDead || (pet.salud !== undefined && pet.salud >= 100)}
+          disabled={loading || isDead}
         >
           💊 Curar
         </button>

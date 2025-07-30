@@ -101,9 +101,17 @@ const Dashboard = () => {
       };
       
       console.log('Mascota validada para agregar:', validatedPet);
+      
+      // Agregar la mascota a la lista y recargar desde el servidor
       setPets(prevPets => [...prevPets, validatedPet]);
       setNewPet({ name: '', type: 'Perro', superPower: '', personalidad: 'normal' });
       setShowCreateForm(false);
+      
+      // Recargar todas las mascotas para asegurar sincronización
+      setTimeout(() => {
+        loadPets();
+      }, 1000);
+      
     } catch (error) {
       console.error('Error creando mascota:', error);
       setError('Error al crear la mascota: ' + (error.response?.data?.error || error.message));
