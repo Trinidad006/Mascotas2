@@ -106,36 +106,55 @@ const PetCard = ({ pet, onUpdate }) => {
         </div>
       )}
 
-      {/* BARRAS DE VIDA COMPLETAMENTE ESTÁTICAS */}
-      <div style={{ marginTop: '20px' }}>
+      {/* BARRAS DE VIDA COMPLETAMENTE ESTÁTICAS - SIN INTERACTIVIDAD */}
+      <div style={{ 
+        marginTop: '20px',
+        pointerEvents: 'none', // Deshabilitar interactividad
+        userSelect: 'none'     // Deshabilitar selección
+      }}>
         <div>
           <strong>Salud:</strong> {pet.salud !== undefined ? pet.salud : 100}%
-          <div className="progress-bar">
-            <div className="progress-fill health" style={{ width: `${Math.max(0, Math.min(100, pet.salud || 100))}%` }}></div>
+          <div className="progress-bar" style={{ pointerEvents: 'none' }}>
+            <div className="progress-fill health" style={{ 
+              width: `${Math.max(0, Math.min(100, pet.salud || 100))}%`,
+              pointerEvents: 'none'
+            }}></div>
           </div>
         </div>
         <div>
           <strong>Felicidad:</strong> {pet.felicidad !== undefined ? pet.felicidad : 100}%
-          <div className="progress-bar">
-            <div className="progress-fill happiness" style={{ width: `${Math.max(0, Math.min(100, pet.felicidad || 100))}%` }}></div>
+          <div className="progress-bar" style={{ pointerEvents: 'none' }}>
+            <div className="progress-fill happiness" style={{ 
+              width: `${Math.max(0, Math.min(100, pet.felicidad || 100))}%`,
+              pointerEvents: 'none'
+            }}></div>
           </div>
         </div>
         <div>
           <strong>Sueño:</strong> {pet.sueno !== undefined ? (pet.sueno >= 0 ? pet.sueno : Math.abs(pet.sueno)) : 0}%
-          <div className="progress-bar">
-            <div className="progress-fill sleep" style={{ width: `${Math.max(0, Math.min(100, (pet.sueno || 0) + 50))}%` }}></div>
+          <div className="progress-bar" style={{ pointerEvents: 'none' }}>
+            <div className="progress-fill sleep" style={{ 
+              width: `${Math.max(0, Math.min(100, (pet.sueno || 0) + 50))}%`,
+              pointerEvents: 'none'
+            }}></div>
           </div>
         </div>
         <div>
           <strong>Hambre:</strong> {pet.hambre !== undefined ? pet.hambre : 0}%
-          <div className="progress-bar">
-            <div className="progress-fill hunger" style={{ width: `${Math.max(0, Math.min(100, pet.hambre || 0))}%` }}></div>
+          <div className="progress-bar" style={{ pointerEvents: 'none' }}>
+            <div className="progress-fill hunger" style={{ 
+              width: `${Math.max(0, Math.min(100, pet.hambre || 0))}%`,
+              pointerEvents: 'none'
+            }}></div>
           </div>
         </div>
         <div>
           <strong>Limpieza:</strong> {pet.limpieza !== undefined ? pet.limpieza : 100}%
-          <div className="progress-bar">
-            <div className="progress-fill cleanliness" style={{ width: `${Math.max(0, Math.min(100, pet.limpieza || 100))}%` }}></div>
+          <div className="progress-bar" style={{ pointerEvents: 'none' }}>
+            <div className="progress-fill cleanliness" style={{ 
+              width: `${Math.max(0, Math.min(100, pet.limpieza || 100))}%`,
+              pointerEvents: 'none'
+            }}></div>
           </div>
         </div>
       </div>
