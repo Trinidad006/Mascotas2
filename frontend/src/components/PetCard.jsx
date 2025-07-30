@@ -44,19 +44,15 @@ const PetCard = ({ pet, onUpdate }) => {
       }
 
       console.log('Resultado de la acción:', result);
-
-      // Mostrar mensaje de éxito
       setMessage(`¡Acción ${action} realizada con éxito!`);
       setTimeout(() => setMessage(''), 3000);
 
-      // Recargar la mascota desde el servidor
+      // Recargar mascota desde servidor
       try {
         const updatedPet = await petService.getVida(pet._id);
-        console.log('Mascota actualizada desde servidor:', updatedPet);
         onUpdate(updatedPet);
       } catch (reloadError) {
         console.error('Error recargando mascota:', reloadError);
-        // Si no se puede recargar, usar el resultado de la acción
         if (result && result._id) {
           onUpdate(result);
         }
@@ -73,7 +69,6 @@ const PetCard = ({ pet, onUpdate }) => {
 
   const getPetEmoji = (type) => {
     if (!type) return '🐾';
-    
     switch (type.toLowerCase()) {
       case 'perro': return '🐕';
       case 'gato': return '🐱';
@@ -85,7 +80,6 @@ const PetCard = ({ pet, onUpdate }) => {
     }
   };
 
-  // Validar que la mascota tenga todos los campos necesarios
   if (!pet || !pet._id) {
     return (
       <div className="pet-card">
@@ -103,10 +97,7 @@ const PetCard = ({ pet, onUpdate }) => {
 
   return (
     <div className="pet-card">
-      <div className="pet-avatar">
-        {getPetEmoji(pet.type)}
-      </div>
-      
+      <div className="pet-avatar">{getPetEmoji(pet.type)}</div>
       <h3>{pet.name || 'Sin nombre'}</h3>
       <p><strong>Tipo:</strong> {pet.type || 'Desconocido'}</p>
       <p><strong>Poder:</strong> {pet.superPower || 'Sin poder'}</p>
@@ -121,75 +112,59 @@ const PetCard = ({ pet, onUpdate }) => {
         </div>
       )}
 
-      {/* Barras de vida estáticas */}
+      {/* BARRAS DE VIDA COMPLETAMENTE ESTÁTICAS */}
       <div style={{ marginTop: '20px' }}>
         <div>
           <strong>Salud:</strong> {pet.salud !== undefined ? pet.salud : 100}%
           <div className="progress-bar">
-            <div 
-              className="progress-fill health" 
-              style={{ 
-                width: `${Math.max(0, Math.min(100, pet.salud || 100))}%`
-              }}
-            ></div>
+            <div className="progress-fill health" style={{ width: `${Math.max(0, Math.min(100, pet.salud || 100))}%` }}></div>
           </div>
         </div>
-
         <div>
           <strong>Felicidad:</strong> {pet.felicidad !== undefined ? pet.felicidad : 100}%
           <div className="progress-bar">
-            <div 
-              className="progress-fill happiness" 
-              style={{ 
-                width: `${Math.max(0, Math.min(100, pet.felicidad || 100))}%`
-              }}
-            ></div>
+            <div className="progress-fill happiness" style={{ width: `${Math.max(0, Math.min(100, pet.felicidad || 100))}%` }}></div>
           </div>
         </div>
-
         <div>
           <strong>Sueño:</strong> {pet.sueno !== undefined ? (pet.sueno >= 0 ? pet.sueno : Math.abs(pet.sueno)) : 0}%
           <div className="progress-bar">
-            <div 
-              className="progress-fill sleep" 
-              style={{ 
-                width: `${Math.max(0, Math.min(100, (pet.sueno || 0) + 50))}%`
-              }}
-            ></div>
+            <div className="progress-fill sleep" style={{ width: `${Math.max(0, Math.min(100, (pet.sueno || 0) + 50))}%` }}></div>
           </div>
         </div>
-
         <div>
           <strong>Hambre:</strong> {pet.hambre !== undefined ? pet.hambre : 0}%
           <div className="progress-bar">
-            <div 
-              className="progress-fill hunger" 
-              style={{ 
-                width: `${Math.max(0, Math.min(100, pet.hambre || 0))}%`
-              }}
-            ></div>
+            <div className="progress-fill hunger" style={{ width: `${Math.max(0, Math.min(100, pet.hambre || 0))}%` }}></div>
           </div>
         </div>
-
         <div>
           <strong>Limpieza:</strong> {pet.limpieza !== undefined ? pet.limpieza : 100}%
           <div className="progress-bar">
-            <div 
-              className="progress-fill cleanliness" 
-              style={{ 
-                width: `${Math.max(0, Math.min(100, pet.limpieza || 100))}%`
-              }}
-            ></div>
+            <div className="progress-fill cleanliness" style={{ width: `${Math.max(0, Math.min(100, pet.limpieza || 100))}%` }}></div>
           </div>
         </div>
       </div>
 
-      {/* Botones de acción */}
-      <div className="actions-grid">
+      {/* BOTONES DE ACCIÓN - FUERA DE CUALQUIER CONTENEDOR INTERACTIVO */}
+      <div style={{ 
+        marginTop: '20px', 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(3, 1fr)', 
+        gap: '10px',
+        position: 'relative',
+        zIndex: 1000
+      }}>
         <button 
           className="btn" 
           onClick={() => handleAction('dormir')}
-          disabled={loading || isDead}
+          disabled={loading}
+          style={{ 
+            padding: '10px', 
+            fontSize: '14px',
+            position: 'relative',
+            zIndex: 1001
+          }}
         >
           😴 Dormir
         </button>
@@ -197,7 +172,13 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('jugar')}
-          disabled={loading || isDead}
+          disabled={loading}
+          style={{ 
+            padding: '10px', 
+            fontSize: '14px',
+            position: 'relative',
+            zIndex: 1001
+          }}
         >
           🎾 Jugar
         </button>
@@ -205,7 +186,13 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('alimentar')}
-          disabled={loading || isDead}
+          disabled={loading}
+          style={{ 
+            padding: '10px', 
+            fontSize: '14px',
+            position: 'relative',
+            zIndex: 1001
+          }}
         >
           🍖 Alimentar
         </button>
@@ -213,7 +200,13 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('banar')}
-          disabled={loading || isDead}
+          disabled={loading}
+          style={{ 
+            padding: '10px', 
+            fontSize: '14px',
+            position: 'relative',
+            zIndex: 1001
+          }}
         >
           🛁 Bañar
         </button>
@@ -221,7 +214,13 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('acariciar')}
-          disabled={loading || isDead}
+          disabled={loading}
+          style={{ 
+            padding: '10px', 
+            fontSize: '14px',
+            position: 'relative',
+            zIndex: 1001
+          }}
         >
           🥰 Acariciar
         </button>
@@ -229,7 +228,13 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('curar')}
-          disabled={loading || isDead}
+          disabled={loading}
+          style={{ 
+            padding: '10px', 
+            fontSize: '14px',
+            position: 'relative',
+            zIndex: 1001
+          }}
         >
           💊 Curar
         </button>
