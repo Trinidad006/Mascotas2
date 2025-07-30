@@ -16,10 +16,6 @@ const Dashboard = () => {
     personalidad: 'normal'
   });
 
-  useEffect(() => {
-    loadPets();
-  }, []);
-
   const loadPets = async () => {
     try {
       setLoading(true);
@@ -55,6 +51,19 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
+
+  // Exponer la función globalmente para que PetCard pueda usarla
+  React.useEffect(() => {
+    window.reloadPets = loadPets;
+    return () => {
+      delete window.reloadPets;
+    };
+  }, []);
+
+  // Cargar mascotas al inicio
+  useEffect(() => {
+    loadPets();
+  }, []);
 
   const handleCreatePet = async (e) => {
     e.preventDefault();
