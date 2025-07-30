@@ -34,13 +34,20 @@ const Dashboard = () => {
 
   const handleCreatePet = async (e) => {
     e.preventDefault();
+    setError('');
+    
     try {
+      console.log('Creando mascota:', newPet);
       const createdPet = await petService.create(newPet);
+      console.log('Mascota creada:', createdPet);
+      
       setPets([...pets, createdPet]);
       setNewPet({ name: '', type: 'Perro', superPower: '', personalidad: 'normal' });
       setShowCreateForm(false);
     } catch (error) {
+      console.error('Error creando mascota:', error);
       setError(error.response?.data?.error || 'Error al crear la mascota');
+      setTimeout(() => setError(''), 5000);
     }
   };
 
@@ -118,14 +125,6 @@ const Dashboard = () => {
                   <select
                     value={newPet.type}
                     onChange={(e) => setNewPet({...newPet, type: e.target.value})}
-                    style={{ 
-                      padding: '15px', 
-                      borderRadius: '15px', 
-                      border: '2px solid rgba(255, 255, 255, 0.2)',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      color: 'white',
-                      fontSize: '16px'
-                    }}
                   >
                     <option value="Perro">🐕 Perro</option>
                     <option value="Gato">🐱 Gato</option>
@@ -152,14 +151,6 @@ const Dashboard = () => {
                   <select
                     value={newPet.personalidad}
                     onChange={(e) => setNewPet({...newPet, personalidad: e.target.value})}
-                    style={{ 
-                      padding: '15px', 
-                      borderRadius: '15px', 
-                      border: '2px solid rgba(255, 255, 255, 0.2)',
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      color: 'white',
-                      fontSize: '16px'
-                    }}
                   >
                     <option value="normal">😊 Normal</option>
                     <option value="perezosa">😴 Perezosa</option>

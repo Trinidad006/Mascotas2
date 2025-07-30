@@ -10,6 +10,8 @@ const PetCard = ({ pet, onUpdate }) => {
     setMessage('');
     
     try {
+      console.log(`Ejecutando acción: ${action} para mascota: ${pet._id}`);
+      
       let result;
       switch (action) {
         case 'dormir':
@@ -34,17 +36,25 @@ const PetCard = ({ pet, onUpdate }) => {
           return;
       }
 
+      console.log('Resultado de la acción:', result);
+
       // Mostrar advertencia si existe
       if (result.advertencia) {
         setMessage(result.advertencia);
+        setTimeout(() => setMessage(''), 5000);
+      } else if (result.message) {
+        setMessage(result.message);
         setTimeout(() => setMessage(''), 3000);
       }
 
       // Actualizar la mascota en el componente padre
-      onUpdate(result.pet || result);
+      const updatedPet = result.pet || result;
+      console.log('Mascota actualizada:', updatedPet);
+      onUpdate(updatedPet);
     } catch (error) {
+      console.error('Error en acción:', error);
       setMessage(error.response?.data?.error || 'Error al realizar la acción');
-      setTimeout(() => setMessage(''), 3000);
+      setTimeout(() => setMessage(''), 5000);
     } finally {
       setLoading(false);
     }
@@ -104,8 +114,7 @@ const PetCard = ({ pet, onUpdate }) => {
             <div 
               className="progress-fill health" 
               style={{ 
-                width: `${Math.max(0, pet.salud)}%`,
-                backgroundColor: getStatusColor(pet.salud)
+                width: `${Math.max(0, Math.min(100, pet.salud))}%`
               }}
             ></div>
           </div>
@@ -117,8 +126,7 @@ const PetCard = ({ pet, onUpdate }) => {
             <div 
               className="progress-fill happiness" 
               style={{ 
-                width: `${Math.max(0, pet.felicidad)}%`,
-                backgroundColor: getStatusColor(pet.felicidad)
+                width: `${Math.max(0, Math.min(100, pet.felicidad))}%`
               }}
             ></div>
           </div>
@@ -130,8 +138,7 @@ const PetCard = ({ pet, onUpdate }) => {
             <div 
               className="progress-fill sleep" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.sueno + 50))}%`,
-                backgroundColor: getStatusColor(pet.sueno, true)
+                width: `${Math.max(0, Math.min(100, (pet.sueno + 50)))}%`
               }}
             ></div>
           </div>
@@ -143,8 +150,7 @@ const PetCard = ({ pet, onUpdate }) => {
             <div 
               className="progress-fill hunger" 
               style={{ 
-                width: `${pet.hambre}%`,
-                backgroundColor: getStatusColor(pet.hambre, true)
+                width: `${Math.max(0, Math.min(100, pet.hambre))}%`
               }}
             ></div>
           </div>
@@ -156,8 +162,7 @@ const PetCard = ({ pet, onUpdate }) => {
             <div 
               className="progress-fill cleanliness" 
               style={{ 
-                width: `${Math.max(0, pet.limpieza)}%`,
-                backgroundColor: getStatusColor(pet.limpieza)
+                width: `${Math.max(0, Math.min(100, pet.limpieza))}%`
               }}
             ></div>
           </div>
