@@ -47,25 +47,11 @@ const PetCard = ({ pet, onUpdate }) => {
       setMessage(`¡Acción ${action} realizada con éxito!`);
       setTimeout(() => setMessage(''), 3000);
 
-      // Forzar recarga completa de todas las mascotas
-      try {
-        console.log('Forzando recarga completa de mascotas...');
-        // Llamar a la función de recarga del Dashboard
-        if (window.reloadPets) {
-          window.reloadPets();
-        } else {
-          // Fallback: recargar página después de 1 segundo
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000);
-        }
-      } catch (reloadError) {
-        console.error('Error en recarga:', reloadError);
-        // Fallback: recargar página
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-      }
+      // Recargar página inmediatamente para ver cambios
+      setTimeout(() => {
+        window.location.reload();
+      }, 500);
+
     } catch (error) {
       console.error('Error en acción:', error);
       const errorMessage = error.response?.data?.error || error.message || 'Error al realizar la acción';
