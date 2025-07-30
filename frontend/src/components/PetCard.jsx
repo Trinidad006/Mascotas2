@@ -45,12 +45,15 @@ const PetCard = ({ pet, onUpdate }) => {
 
       console.log('Resultado de la acción:', result);
 
-      // Mostrar advertencia si existe
+      // Mostrar mensaje de éxito o advertencia
       if (result.advertencia) {
         setMessage(result.advertencia);
         setTimeout(() => setMessage(''), 5000);
       } else if (result.message) {
         setMessage(result.message);
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        setMessage(`¡Acción ${action} realizada con éxito!`);
         setTimeout(() => setMessage(''), 3000);
       }
 
@@ -59,7 +62,24 @@ const PetCard = ({ pet, onUpdate }) => {
       console.log('Mascota actualizada:', updatedPet);
       
       if (updatedPet && updatedPet._id) {
-        onUpdate(updatedPet);
+        // Validar la mascota actualizada
+        const validatedUpdatedPet = {
+          _id: updatedPet._id,
+          name: updatedPet.name || pet.name,
+          type: updatedPet.type || pet.type,
+          superPower: updatedPet.superPower || pet.superPower,
+          personalidad: updatedPet.personalidad || pet.personalidad,
+          salud: updatedPet.salud !== undefined ? updatedPet.salud : pet.salud,
+          felicidad: updatedPet.felicidad !== undefined ? updatedPet.felicidad : pet.felicidad,
+          sueno: updatedPet.sueno !== undefined ? updatedPet.sueno : pet.sueno,
+          hambre: updatedPet.hambre !== undefined ? updatedPet.hambre : pet.hambre,
+          limpieza: updatedPet.limpieza !== undefined ? updatedPet.limpieza : pet.limpieza,
+          isDead: updatedPet.isDead !== undefined ? updatedPet.isDead : pet.isDead,
+          ownerId: updatedPet.ownerId || pet.ownerId
+        };
+        
+        console.log('Mascota validada para actualizar:', validatedUpdatedPet);
+        onUpdate(validatedUpdatedPet);
       } else {
         console.error('Respuesta inválida del servidor:', result);
         setMessage('Error: Respuesta inválida del servidor');

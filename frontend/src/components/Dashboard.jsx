@@ -25,8 +25,29 @@ const Dashboard = () => {
       setLoading(true);
       console.log('Cargando mascotas...');
       const petsData = await petService.getAll();
-      console.log('Mascotas cargadas:', petsData);
-      setPets(petsData);
+      console.log('Mascotas cargadas (raw):', petsData);
+      
+      // Verificar que cada mascota tenga los campos necesarios
+      const validatedPets = petsData.map(pet => {
+        console.log('Validando mascota:', pet);
+        return {
+          _id: pet._id,
+          name: pet.name || 'Sin nombre',
+          type: pet.type || 'Desconocido',
+          superPower: pet.superPower || 'Sin poder',
+          personalidad: pet.personalidad || 'normal',
+          salud: pet.salud !== undefined ? pet.salud : 100,
+          felicidad: pet.felicidad !== undefined ? pet.felicidad : 100,
+          sueno: pet.sueno !== undefined ? pet.sueno : 0,
+          hambre: pet.hambre !== undefined ? pet.hambre : 0,
+          limpieza: pet.limpieza !== undefined ? pet.limpieza : 100,
+          isDead: pet.isDead || false,
+          ownerId: pet.ownerId
+        };
+      });
+      
+      console.log('Mascotas validadas:', validatedPets);
+      setPets(validatedPets);
     } catch (error) {
       console.error('Error cargando mascotas:', error);
       setError('Error al cargar las mascotas: ' + (error.response?.data?.error || error.message));
@@ -53,10 +74,34 @@ const Dashboard = () => {
         return;
       }
       
+      // Verificar si ya existe una mascota con el mismo nombre
+      const existingPet = pets.find(pet => pet.name.toLowerCase() === newPet.name.toLowerCase());
+      if (existingPet) {
+        setError('Ya existe una mascota con ese nombre. Usa un nombre diferente.');
+        return;
+      }
+      
       const createdPet = await petService.create(newPet);
       console.log('Mascota creada:', createdPet);
       
-      setPets(prevPets => [...prevPets, createdPet]);
+      // Validar la mascota creada antes de agregarla
+      const validatedPet = {
+        _id: createdPet._id,
+        name: createdPet.name || newPet.name,
+        type: createdPet.type || newPet.type,
+        superPower: createdPet.superPower || newPet.superPower,
+        personalidad: createdPet.personalidad || newPet.personalidad,
+        salud: createdPet.salud !== undefined ? createdPet.salud : 100,
+        felicidad: createdPet.felicidad !== undefined ? createdPet.felicidad : 100,
+        sueno: createdPet.sueno !== undefined ? createdPet.sueno : 0,
+        hambre: createdPet.hambre !== undefined ? createdPet.hambre : 0,
+        limpieza: createdPet.limpieza !== undefined ? createdPet.limpieza : 100,
+        isDead: createdPet.isDead || false,
+        ownerId: createdPet.ownerId
+      };
+      
+      console.log('Mascota validada para agregar:', validatedPet);
+      setPets(prevPets => [...prevPets, validatedPet]);
       setNewPet({ name: '', type: 'Perro', superPower: '', personalidad: 'normal' });
       setShowCreateForm(false);
     } catch (error) {
