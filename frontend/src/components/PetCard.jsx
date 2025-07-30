@@ -6,6 +6,12 @@ const PetCard = ({ pet, onUpdate }) => {
   const [message, setMessage] = useState('');
 
   const handleAction = async (action) => {
+    if (!pet || !pet._id) {
+      console.error('Mascota inválida:', pet);
+      setMessage('Error: Mascota inválida');
+      return;
+    }
+
     setLoading(true);
     setMessage('');
     
@@ -33,6 +39,7 @@ const PetCard = ({ pet, onUpdate }) => {
           result = await petService.curar(pet._id);
           break;
         default:
+          console.error('Acción no válida:', action);
           return;
       }
 
@@ -50,10 +57,17 @@ const PetCard = ({ pet, onUpdate }) => {
       // Actualizar la mascota en el componente padre
       const updatedPet = result.pet || result;
       console.log('Mascota actualizada:', updatedPet);
-      onUpdate(updatedPet);
+      
+      if (updatedPet && updatedPet._id) {
+        onUpdate(updatedPet);
+      } else {
+        console.error('Respuesta inválida del servidor:', result);
+        setMessage('Error: Respuesta inválida del servidor');
+      }
     } catch (error) {
       console.error('Error en acción:', error);
-      setMessage(error.response?.data?.error || 'Error al realizar la acción');
+      const errorMessage = error.response?.data?.error || error.message || 'Error al realizar la acción';
+      setMessage(errorMessage);
       setTimeout(() => setMessage(''), 5000);
     } finally {
       setLoading(false);
@@ -61,6 +75,8 @@ const PetCard = ({ pet, onUpdate }) => {
   };
 
   const getPetEmoji = (type) => {
+    if (!type) return '🐾';
+    
     switch (type.toLowerCase()) {
       case 'perro': return '🐕';
       case 'gato': return '🐱';
@@ -79,12 +95,21 @@ const PetCard = ({ pet, onUpdate }) => {
     return value <= 20 ? '#ff6b6b' : value <= 50 ? '#f39c12' : '#4ecdc4';
   };
 
+  // Validar que la mascota tenga todos los campos necesarios
+  if (!pet || !pet._id) {
+    return (
+      <div className="pet-card">
+        <div className="error">Error: Mascota inválida</div>
+      </div>
+    );
+  }
+
   const isDead = pet.isDead || 
-    pet.salud <= 0 || 
-    pet.felicidad <= 0 || 
-    pet.sueno <= -50 || 
-    pet.hambre >= 100 || 
-    pet.limpieza <= 0;
+    (pet.salud !== undefined && pet.salud <= 0) || 
+    (pet.felicidad !== undefined && pet.felicidad <= 0) || 
+    (pet.sueno !== undefined && pet.sueno <= -50) || 
+    (pet.hambre !== undefined && pet.hambre >= 100) || 
+    (pet.limpieza !== undefined && pet.limpieza <= 0);
 
   return (
     <div className="pet-card">
@@ -92,16 +117,16 @@ const PetCard = ({ pet, onUpdate }) => {
         {getPetEmoji(pet.type)}
       </div>
       
-      <h3>{pet.name}</h3>
-      <p><strong>Tipo:</strong> {pet.type}</p>
-      <p><strong>Poder:</strong> {pet.superPower}</p>
-      <p><strong>Personalidad:</strong> {pet.personalidad}</p>
+      <h3>{pet.name || 'Sin nombre'}</h3>
+      <p><strong>Tipo:</strong> {pet.type || 'Desconocido'}</p>
+      <p><strong>Poder:</strong> {pet.superPower || 'Sin poder'}</p>
+      <p><strong>Personalidad:</strong> {pet.personalidad || 'Normal'}</p>
       
       <div className={`status-indicator ${isDead ? 'status-dead' : 'status-alive'}`}></div>
       <span>{isDead ? 'Muerta' : 'Viva'}</span>
 
       {message && (
-        <div className={message.includes('¡Cuidado!') ? 'error' : 'success'} style={{ marginTop: '15px' }}>
+        <div className={message.includes('¡Cuidado!') || message.includes('Error') ? 'error' : 'success'} style={{ marginTop: '15px' }}>
           {message}
         </div>
       )}
@@ -109,60 +134,60 @@ const PetCard = ({ pet, onUpdate }) => {
       {/* Barras de vida */}
       <div style={{ marginTop: '20px' }}>
         <div>
-          <strong>Salud:</strong> {pet.salud}%
+          <strong>Salud:</strong> {pet.salud !== undefined ? pet.salud : 0}%
           <div className="progress-bar">
             <div 
               className="progress-fill health" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.salud))}%`
+                width: `${Math.max(0, Math.min(100, pet.salud || 0))}%`
               }}
             ></div>
           </div>
         </div>
 
         <div>
-          <strong>Felicidad:</strong> {pet.felicidad}%
+          <strong>Felicidad:</strong> {pet.felicidad !== undefined ? pet.felicidad : 0}%
           <div className="progress-bar">
             <div 
               className="progress-fill happiness" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.felicidad))}%`
+                width: `${Math.max(0, Math.min(100, pet.felicidad || 0))}%`
               }}
             ></div>
           </div>
         </div>
 
         <div>
-          <strong>Sueño:</strong> {pet.sueno >= 0 ? pet.sueno : Math.abs(pet.sueno)}%
+          <strong>Sueño:</strong> {pet.sueno !== undefined ? (pet.sueno >= 0 ? pet.sueno : Math.abs(pet.sueno)) : 0}%
           <div className="progress-bar">
             <div 
               className="progress-fill sleep" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, (pet.sueno + 50)))}%`
+                width: `${Math.max(0, Math.min(100, (pet.sueno || 0) + 50))}%`
               }}
             ></div>
           </div>
         </div>
 
         <div>
-          <strong>Hambre:</strong> {pet.hambre}%
+          <strong>Hambre:</strong> {pet.hambre !== undefined ? pet.hambre : 0}%
           <div className="progress-bar">
             <div 
               className="progress-fill hunger" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.hambre))}%`
+                width: `${Math.max(0, Math.min(100, pet.hambre || 0))}%`
               }}
             ></div>
           </div>
         </div>
 
         <div>
-          <strong>Limpieza:</strong> {pet.limpieza}%
+          <strong>Limpieza:</strong> {pet.limpieza !== undefined ? pet.limpieza : 0}%
           <div className="progress-bar">
             <div 
               className="progress-fill cleanliness" 
               style={{ 
-                width: `${Math.max(0, Math.min(100, pet.limpieza))}%`
+                width: `${Math.max(0, Math.min(100, pet.limpieza || 0))}%`
               }}
             ></div>
           </div>
@@ -174,7 +199,7 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('dormir')}
-          disabled={loading || isDead || pet.sueno >= 100}
+          disabled={loading || isDead || (pet.sueno !== undefined && pet.sueno >= 100)}
         >
           😴 Dormir
         </button>
@@ -182,7 +207,10 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('jugar')}
-          disabled={loading || isDead || pet.sueno < 10 || pet.hambre > 80 || pet.limpieza < 20}
+          disabled={loading || isDead || 
+            (pet.sueno !== undefined && pet.sueno < 10) || 
+            (pet.hambre !== undefined && pet.hambre > 80) || 
+            (pet.limpieza !== undefined && pet.limpieza < 20)}
         >
           🎾 Jugar
         </button>
@@ -214,7 +242,7 @@ const PetCard = ({ pet, onUpdate }) => {
         <button 
           className="btn" 
           onClick={() => handleAction('curar')}
-          disabled={loading || isDead || pet.salud >= 100}
+          disabled={loading || isDead || (pet.salud !== undefined && pet.salud >= 100)}
         >
           💊 Curar
         </button>

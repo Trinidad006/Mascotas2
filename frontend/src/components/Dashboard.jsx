@@ -23,10 +23,13 @@ const Dashboard = () => {
   const loadPets = async () => {
     try {
       setLoading(true);
+      console.log('Cargando mascotas...');
       const petsData = await petService.getAll();
+      console.log('Mascotas cargadas:', petsData);
       setPets(petsData);
     } catch (error) {
-      setError('Error al cargar las mascotas');
+      console.error('Error cargando mascotas:', error);
+      setError('Error al cargar las mascotas: ' + (error.response?.data?.error || error.message));
     } finally {
       setLoading(false);
     }
@@ -38,30 +41,50 @@ const Dashboard = () => {
     
     try {
       console.log('Creando mascota:', newPet);
+      
+      // Validar datos antes de enviar
+      if (!newPet.name.trim()) {
+        setError('El nombre es requerido');
+        return;
+      }
+      
+      if (!newPet.superPower.trim()) {
+        setError('El poder especial es requerido');
+        return;
+      }
+      
       const createdPet = await petService.create(newPet);
       console.log('Mascota creada:', createdPet);
       
-      setPets([...pets, createdPet]);
+      setPets(prevPets => [...prevPets, createdPet]);
       setNewPet({ name: '', type: 'Perro', superPower: '', personalidad: 'normal' });
       setShowCreateForm(false);
     } catch (error) {
       console.error('Error creando mascota:', error);
-      setError(error.response?.data?.error || 'Error al crear la mascota');
+      setError('Error al crear la mascota: ' + (error.response?.data?.error || error.message));
       setTimeout(() => setError(''), 5000);
     }
   };
 
   const handleUpdatePet = (updatedPet) => {
-    setPets(pets.map(pet => pet._id === updatedPet._id ? updatedPet : pet));
+    try {
+      console.log('Actualizando mascota:', updatedPet);
+      setPets(prevPets => prevPets.map(pet => pet._id === updatedPet._id ? updatedPet : pet));
+    } catch (error) {
+      console.error('Error actualizando mascota:', error);
+      setError('Error al actualizar la mascota');
+    }
   };
 
   const handleDeletePet = async (petId) => {
     if (window.confirm('¿Estás seguro de que quieres eliminar esta mascota?')) {
       try {
+        console.log('Eliminando mascota:', petId);
         await petService.delete(petId);
-        setPets(pets.filter(pet => pet._id !== petId));
+        setPets(prevPets => prevPets.filter(pet => pet._id !== petId));
       } catch (error) {
-        setError('Error al eliminar la mascota');
+        console.error('Error eliminando mascota:', error);
+        setError('Error al eliminar la mascota: ' + (error.response?.data?.error || error.message));
       }
     }
   };
