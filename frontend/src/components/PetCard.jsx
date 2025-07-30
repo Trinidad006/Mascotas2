@@ -45,12 +45,11 @@ const PetCard = ({ pet, onUpdate }) => {
 
       console.log('Resultado de la acción:', result);
       setMessage(`¡Acción ${action} realizada con éxito!`);
-      setTimeout(() => setMessage(''), 3000);
-
-      // Recargar página inmediatamente para ver cambios
+      
+      // Recargar página después de mostrar el mensaje
       setTimeout(() => {
         window.location.reload();
-      }, 500);
+      }, 1000);
 
     } catch (error) {
       console.error('Error en acción:', error);
