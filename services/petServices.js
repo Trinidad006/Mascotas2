@@ -128,6 +128,13 @@ export async function curarPet(id, user) {
   verificarRestricciones(pet, 'curar');
   pet.salud += 20;
   if (pet.salud > 100) pet.salud = 100;
+  
+  // Bajar felicidad y limpieza al curar (como en la vida real)
+  pet.felicidad -= 10;
+  if (pet.felicidad < 0) pet.felicidad = 0;
+  pet.limpieza -= 15;
+  if (pet.limpieza < 0) pet.limpieza = 0;
+  
   return await saveAndCheckDeath(pet);
 }
 
