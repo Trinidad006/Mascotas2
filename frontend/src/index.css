@@ -53,46 +53,47 @@ body {
   box-shadow: none;
 }
 
+/* Barras de progreso completamente estáticas */
 .progress-bar {
   width: 100%;
-  height: 25px;
+  height: 20px;
   background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  border-radius: 10px;
   overflow: hidden;
-  margin: 15px 0;
+  margin: 5px 0;
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  pointer-events: none;
+  user-select: none;
 }
 
 .progress-fill {
   height: 100%;
-  transition: width 0.5s ease;
-  border-radius: 15px;
-  position: relative;
-  overflow: hidden;
+  border-radius: 10px;
+  transition: none !important; /* Eliminar transiciones */
+  animation: none !important; /* Eliminar animaciones */
+  pointer-events: none;
+  user-select: none;
 }
 
-.progress-fill::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: shimmer 2s infinite;
+.progress-fill.health {
+  background: linear-gradient(90deg, #ff6b6b, #ff8e8e);
 }
 
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
+.progress-fill.happiness {
+  background: linear-gradient(90deg, #4ecdc4, #44a08d);
 }
 
-.progress-fill.health { background: linear-gradient(90deg, #ff6b9d, #c44569); }
-.progress-fill.happiness { background: linear-gradient(90deg, #4ecdc4, #44a08d); }
-.progress-fill.sleep { background: linear-gradient(90deg, #667eea, #764ba2); }
-.progress-fill.hunger { background: linear-gradient(90deg, #f39c12, #e67e22); }
-.progress-fill.cleanliness { background: linear-gradient(90deg, #9b59b6, #8e44ad); }
+.progress-fill.sleep {
+  background: linear-gradient(90deg, #a8e6cf, #dcedc1);
+}
+
+.progress-fill.hunger {
+  background: linear-gradient(90deg, #ffd93d, #ff6b6b);
+}
+
+.progress-fill.cleanliness {
+  background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+}
 
 .pet-card {
   background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
