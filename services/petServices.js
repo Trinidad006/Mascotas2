@@ -51,9 +51,9 @@ export async function deletePet(id, user) {
 
 function verificarRestricciones(pet, accion) {
   if (pet.isDead) throw new Error('No se puede realizar esta acción, la mascota ha muerto.');
-  if (accion === 'jugar' && (pet.sueno < 10 || pet.limpieza < 20 || pet.hambre > 80)) throw new Error('No se puede jugar: mascota cansada, sucia o hambrienta.');
+  if (accion === 'jugar' && (pet.sueno > 80 || pet.limpieza < 20 || pet.hambre > 80)) throw new Error('No se puede jugar: mascota cansada, sucia o hambrienta.');
   if (accion === 'alimentar' && (pet.felicidad >= 100 || pet.hambre === 0)) throw new Error('No se puede alimentar: felicidad al máximo o hambre en 0.');
-  if (accion === 'dormir' && pet.sueno >= 100) throw new Error('No se puede dormir: sueño al máximo.');
+  if (accion === 'dormir' && pet.sueno <= 0) throw new Error('No se puede dormir: mascota descansada.');
 }
 
 export async function dormirPet(id, user) {
