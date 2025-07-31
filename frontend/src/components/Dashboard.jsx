@@ -130,8 +130,15 @@ const Dashboard = () => {
 
   const handleUpdatePet = (updatedPet) => {
     try {
-      console.log('Actualizando mascota:', updatedPet);
-      setPets(prevPets => prevPets.map(pet => pet._id === updatedPet._id ? updatedPet : pet));
+      console.log('handleUpdatePet llamado con:', updatedPet);
+      console.log('Pets actuales:', pets);
+      setPets(prevPets => {
+        console.log('prevPets:', prevPets);
+        const newPets = prevPets.map(pet => pet._id === updatedPet._id ? updatedPet : pet);
+        console.log('newPets:', newPets);
+        return newPets;
+      });
+      console.log('handleUpdatePet completado');
     } catch (error) {
       console.error('Error actualizando mascota:', error);
       setError('Error al actualizar la mascota');

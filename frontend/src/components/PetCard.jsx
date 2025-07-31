@@ -70,7 +70,9 @@ const PetCard = ({ pet, onUpdate }) => {
         };
         
         console.log('Mascota validada para actualizar:', validatedPet);
+        console.log('Llamando a onUpdate...');
         onUpdate(validatedPet);
+        console.log('onUpdate llamado exitosamente');
       } catch (reloadError) {
         console.error('Error recargando mascota:', reloadError);
         // Si no se puede recargar, usar el resultado de la acción
