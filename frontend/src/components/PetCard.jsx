@@ -162,10 +162,10 @@ const PetCard = ({ pet, onUpdate }) => {
           </div>
         </div>
         <div>
-          <strong>Sueño:</strong> {pet.sueno !== undefined ? (pet.sueno >= 0 ? pet.sueno : Math.abs(pet.sueno)) : 0}%
+          <strong>Sueño:</strong> {pet.sueno !== undefined ? pet.sueno : 0}%
           <div className="progress-bar" style={{ pointerEvents: 'none' }}>
             <div className="progress-fill sleep" style={{ 
-              width: `${Math.max(0, Math.min(100, (pet.sueno || 0) + 50))}%`,
+              width: `${Math.max(0, Math.min(100, pet.sueno || 0))}%`,
               pointerEvents: 'none'
             }}></div>
           </div>
