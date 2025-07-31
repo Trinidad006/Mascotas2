@@ -400,10 +400,10 @@ if (process.env.NODE_ENV !== 'production') {
   app.use(express.static(frontendPath));
   
   // Para todas las rutas que no sean API, servir index.html
-  app.get('*', (req, res, next) => {
+  app.get('*', (req, res) => {
     // Si es una ruta de API, continuar
-    if (req.path.startsWith('/api') || req.path.startsWith('/login') || req.path.startsWith('/users') || req.path.startsWith('/pets') || req.path.startsWith('/api-docs')) {
-      return next();
+    if (req.path.startsWith('/api') || req.path.startsWith('/users') || req.path.startsWith('/pets') || req.path.startsWith('/api-docs')) {
+      return res.status(404).json({ error: 'Ruta no encontrada' });
     }
     
     // Si no es API, servir el frontend
