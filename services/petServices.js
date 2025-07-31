@@ -59,10 +59,9 @@ function verificarRestricciones(pet, accion) {
 export async function dormirPet(id, user) {
   const pet = await Pet.findById(id);
   verificarRestricciones(pet, 'dormir');
-  let suenoGanado = pet.personalidad === 'perezosa' ? 30 : pet.personalidad === 'juguetona' ? 10 : 20;
-  pet.sueno += suenoGanado;
-  if (pet.sueno > 100) pet.sueno = 100;
-  if (pet.sueno < 0) pet.sueno = 0;
+  let suenoPerdido = pet.personalidad === 'perezosa' ? 30 : pet.personalidad === 'juguetona' ? 10 : 20;
+  pet.sueno -= suenoPerdido; // BAJAR el sueño cuando duerme
+  if (pet.sueno < 0) pet.sueno = 0; // No puede bajar de 0
   if (pet.sueno < 20) pet.felicidad += 5;
   if (pet.felicidad > 100) pet.felicidad = 100;
   if (pet.hambre > 80 || pet.limpieza < 20) pet.salud -= 10;
@@ -74,11 +73,11 @@ export async function jugarPet(id, user) {
   verificarRestricciones(pet, 'jugar');
   if (pet.hambre > 80 || pet.limpieza < 20) pet.salud -= 10;
   let felicidadGanada = pet.personalidad === 'juguetona' ? 20 : pet.personalidad === 'perezosa' ? 5 : 10;
-  let suenoPerdido = pet.personalidad === 'perezosa' ? 20 : 10;
+  let suenoGanado = pet.personalidad === 'perezosa' ? 20 : 10; // SUBIR el sueño cuando juega
   pet.felicidad += felicidadGanada;
   if (pet.felicidad > 100) pet.felicidad = 100;
-  pet.sueno -= suenoPerdido;
-  if (pet.sueno < -50) pet.sueno = -50;
+  pet.sueno += suenoGanado; // SUBIR el sueño cuando juega
+  if (pet.sueno > 100) pet.sueno = 100;
   return await saveAndCheckDeath(pet);
 }
 
