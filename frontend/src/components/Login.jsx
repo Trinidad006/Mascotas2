@@ -42,8 +42,11 @@ const Login = () => {
           setTimeout(() => navigate('/dashboard'), 1000);
         } else {
           setSuccess('¡Usuario registrado exitosamente! Ahora puedes iniciar sesión.');
-          setIsLogin(true);
-          setFormData({ name: '', password: '' });
+          setTimeout(() => {
+            setIsLogin(true);
+            setFormData({ name: '', password: '' });
+            setSuccess('');
+          }, 2000);
         }
       } else {
         setError(result.error);
@@ -55,6 +58,20 @@ const Login = () => {
     }
   };
 
+  const switchToRegister = () => {
+    setIsLogin(false);
+    setError('');
+    setSuccess('');
+    setFormData({ name: '', password: '' });
+  };
+
+  const switchToLogin = () => {
+    setIsLogin(true);
+    setError('');
+    setSuccess('');
+    setFormData({ name: '', password: '' });
+  };
+
   return (
     <div className="container">
       <div className="header">
@@ -64,7 +81,7 @@ const Login = () => {
 
       <div className="login-form">
         <h2 style={{ textAlign: 'center', marginBottom: '30px', color: '#333' }}>
-          {isLogin ? 'Iniciar Sesión' : 'Registrarse'}
+          {isLogin ? 'Iniciar Sesión' : 'Crear Nueva Cuenta'}
         </h2>
 
         {error && <div className="error">{error}</div>}
@@ -103,23 +120,30 @@ const Login = () => {
             style={{ width: '100%', marginTop: '20px' }}
             disabled={loading}
           >
-            {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Registrarse')}
+            {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta')}
           </button>
         </form>
 
         <div style={{ textAlign: 'center', marginTop: '20px' }}>
-          <button 
-            type="button" 
-            className="btn" 
-            style={{ background: 'transparent', color: '#667eea', border: '2px solid #667eea' }}
-            onClick={() => {
-              setIsLogin(!isLogin);
-              setError('');
-              setSuccess('');
-            }}
-          >
-            {isLogin ? '¿No tienes cuenta? Regístrate' : '¿Ya tienes cuenta? Inicia sesión'}
-          </button>
+          {isLogin ? (
+            <button 
+              type="button" 
+              className="btn" 
+              style={{ background: 'transparent', color: '#667eea', border: '2px solid #667eea' }}
+              onClick={switchToRegister}
+            >
+              ¿No tienes cuenta? Crear Nueva Cuenta
+            </button>
+          ) : (
+            <button 
+              type="button" 
+              className="btn" 
+              style={{ background: 'transparent', color: '#667eea', border: '2px solid #667eea' }}
+              onClick={switchToLogin}
+            >
+              ¿Ya tienes cuenta? Iniciar Sesión
+            </button>
+          )}
         </div>
 
         {isLogin && (
