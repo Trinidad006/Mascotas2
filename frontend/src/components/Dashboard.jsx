@@ -20,8 +20,11 @@ const Dashboard = () => {
     try {
       setLoading(true);
       console.log('Cargando mascotas...');
+      console.log('Usuario actual:', user);
+      console.log('Es admin?', user?.role === 'admin');
       const petsData = await petService.getAll();
       console.log('Mascotas cargadas (raw):', petsData);
+      console.log('Número de mascotas:', petsData.length);
       
       // Verificar que cada mascota tenga los campos necesarios
       const validatedPets = petsData.map(pet => {
@@ -43,6 +46,7 @@ const Dashboard = () => {
       });
       
       console.log('Mascotas validadas:', validatedPets);
+      console.log('Número de mascotas validadas:', validatedPets.length);
       setPets(validatedPets);
     } catch (error) {
       console.error('Error cargando mascotas:', error);
