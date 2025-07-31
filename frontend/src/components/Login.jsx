@@ -117,7 +117,13 @@ const Login = () => {
           <button 
             type="submit" 
             className="btn" 
-            style={{ width: '100%', marginTop: '20px' }}
+            style={{ 
+              width: '100%', 
+              marginTop: '20px',
+              background: 'white',
+              color: '#333',
+              border: '2px solid #667eea'
+            }}
             disabled={loading}
           >
             {loading ? 'Cargando...' : (isLogin ? 'Iniciar Sesión' : 'Crear Cuenta')}
